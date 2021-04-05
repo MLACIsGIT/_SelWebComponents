@@ -3,8 +3,22 @@ export default function InputFieldSet(
     errors, fieldValues, handleInputChange, handleInputBlur, type, name, labelText, required, reference, optionList
   }) {
 
+  let labelArea;
   let input;
   let options;
+  let divError;
+  let divErrorClass = '';
+
+  if (labelText !== undefined) {
+    labelArea = <label htmlFor={name} className="form-label">{labelText}</label>
+  }
+
+  if (errors !== undefined) {
+    divErrorClass = `mb-3 ${errors[name] !== '' ? "was-validated" : ""}`
+    divError = <div className="invalid-feedback">
+      {errors[name]}
+    </div>
+  }
 
   switch (type) {
     case "select":
@@ -77,23 +91,19 @@ export default function InputFieldSet(
 
   if (type === 'checkbox') {
     return (
-      <div className={`mb-3 ${errors[name] !== '' ? "was-validated" : ""}`}>
+      <div className={divErrorClass}>
         {input}
-        <label htmlFor={name} className="form-label">{labelText}</label>
-        <div className="invalid-feedback">
-          {errors[name]}
-        </div>
+        {labelArea}
+        {divError}
       </div>
     );
   }
 
   return (
-    <div className={`mb-3 ${errors[name] !== '' ? "was-validated" : ""}`}>
-      <label htmlFor={name} className="form-label">{labelText}</label>
+    <div className={divErrorClass}>
+      {labelArea}
       {input}
-      <div className="invalid-feedback">
-        {errors[name]}
-      </div>
+      {divError}
     </div>
   );
 }
