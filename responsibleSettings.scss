@@ -10,7 +10,7 @@
 }
 
 @media screen and (min-width: 1200px) {
-    .SEL-LAYOUT-CONTAINER {
+    .RESPONSIVE-MARGIN {
         width: 1024px;
     }
     .SEL-LAYOUT-2-COLUMNS {
@@ -20,7 +20,7 @@
 }
 
 @media screen and (min-width: 1000px) and (max-width: 1199px) {
-    .SEL-LAYOUT-CONTAINER {
+    .RESPONSIVE-MARGIN {
         width: 800px;
     }
     .SEL-LAYOUT-2-COLUMNS {
@@ -31,7 +31,7 @@
 }
 
 @media screen and (min-width: 800px) and (max-width: 999px) {
-    .SEL-LAYOUT-CONTAINER {
+    .RESPONSIVE-MARGIN {
         width: 640px;
     }
     .SEL-LAYOUT-2-COLUMNS {
@@ -42,7 +42,7 @@
 }
 
 @media screen and (min-width: 600px) and (max-width: 799px) {
-    .SEL-LAYOUT-CONTAINER {
+    .RESPONSIVE-MARGIN {
         margin: 4px;
         width: auto;
     }
@@ -57,7 +57,7 @@
         display: block;
     }
 
-    .SEL-LAYOUT-CONTAINER {
+    .RESPONSIVE-MARGIN {
         width: auto;
     }
     .SEL-LAYOUT-2-COLUMNS {
