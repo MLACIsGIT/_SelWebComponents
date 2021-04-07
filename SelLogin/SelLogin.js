@@ -19,6 +19,15 @@ export default function SelLogin(props) {
         pass: ''
     });
 
+    function showMessageShortly(codeOfMessage, typeOfAlert) {
+        setFormAlertText(lng(codeOfMessage));
+        setFormAlertType(typeOfAlert);
+        setTimeout(() => {
+            setFormAlertText('');
+            setFormAlertType('');
+        }, 5000);
+    }
+
     function clearAllErrors() {
         setErrors({
             login: '',
@@ -62,22 +71,21 @@ export default function SelLogin(props) {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const isValid = isFormValid();
 
-        if (isValid) {
-            //promise = ###login
+        if (isFormValid()) {
+            let loginResult = await props.db.login(fieldValues.login, fieldValues.pass)
 
-            alert("most jon a mentes")
-            /*
-            promise.then((docRef) => {
-                setFormAlertText(`Sikeres mentés`);
-                setFormAlertType('success');
-                    setFieldValues({
-                        login: '',
-                        pass: ''
-                    });
-                }).catch(err => console.log(err));
-            */
+            if (loginResult.result !== "ok") {
+                showMessageShortly("invalid-password", "danger");
+            } else {
+                props.onLogin({
+                    user: {
+                        email: fieldValues.login,
+                        userLevel: null
+                    },
+                    token: null
+                })
+            }
         }
     }
 

@@ -9,11 +9,15 @@ export default class Db {
         return Math.floor(Math.random() * 8999999) + 1000000;
     }
     getPasswordHash(pass, salt) {
-        let hash = crypto.createHash('sha512');
-        let data = hash.update(`${pass}${salt}`, 'utf-8');
-        let gen_hash = (data.digest('hex')).toUpperCase();
+        let cryptoPasswordHash = crypto.createHash('sha512');
+        let passwordHashData = cryptoPasswordHash.update(pass, 'utf-8');
+        let passwordHash = (passwordHashData.digest('hex')).toUpperCase();
 
-        return gen_hash;
+        let cryptoSaltedHash = crypto.createHash('sha512');
+        let saltedHashData = cryptoSaltedHash.update(`${passwordHash}${salt}`, 'utf-8');
+        let saltedHash = (saltedHashData.digest('hex')).toUpperCase();
+
+        return saltedHash;
     }
 
     async login(email, pass) {
@@ -41,23 +45,36 @@ export default class Db {
             })
         };
 
-        await fetch(this.settings.server.db, fetchParams)
-            .then(data => {
-                return data.json()
-            }).then(jsonData => {
-                if (jsonData.header.result === 'ok') {
-                    let validUntil = jsonData.validUntil;
-                    return ({
-                        result: "ok",
-                        requestId: jsonData.header.requestId,
-                        token: jsonData.body.token,
-                        validUntil: validUntil
-                    })
-                } else {
-                    return {
-                        result: 'login-failed'
-                    }
+        try {
+            let fetchData = await fetch(this.settings.server.db, fetchParams);
+            let jsonData = await fetchData.json();
+
+            if (jsonData.header.result === 'ok') {
+                let serverCurrentUTC = jsonData.body.currentUTC;
+                let serverValidUntil = jsonData.body.validUntil;
+                return ({
+                    result: "ok",
+                    requestId: jsonData.header.requestId,
+                    token: jsonData.body.token,
+                    validUntil: this.getValidUntilFromStrDates(serverCurrentUTC, serverValidUntil)
+                })
+            } else {
+                return {
+                    result: 'nok'
                 }
-            })
+            }
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    getValidUntilFromStrDates(strServerCurrentUTC, strServerValidUntil) {
+        let serverCurrentUTC = new Date(strServerCurrentUTC);
+        let serverValidUntil = new Date(strServerValidUntil);
+        let currentDate = new Date();
+        let minutes = Math.floor((serverValidUntil - serverCurrentUTC) / 60000) - 1;
+
+        return currentDate.setMinutes(currentDate.getMinutes() + minutes)
     }
 }

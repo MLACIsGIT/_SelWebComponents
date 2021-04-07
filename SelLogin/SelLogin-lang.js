@@ -34,14 +34,8 @@ export default function langJSON() {
                 "hu": "Ha elfelejtette a jelszavát, kattintson ide.",
                 "de": "Wenn Sie Ihr Passwort vergessen haben, klicken Sie hier.",
                 "en": "If you have forgotten your password, click here."
-            }
-        },
-    
-        "text-elements": {
+            },
 
-        },
-    
-        "dialogs": {
             "invalid-password": {
                 "hu": "Hibás bejelentkezési adatok",
                 "de": "Falsche Angaben",
