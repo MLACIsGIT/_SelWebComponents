@@ -15,7 +15,7 @@ export default function LoggedUser(props) {
     }
 
     return (
-        <div className="LoggedUser btn btn-success" onClick={onLogout}>
+        <div id="LoggedUser" className="btn btn-success" onClick={onLogout}>
             <div id="LoggedUser-user-icon"></div>
             {lng("div-LoggedUser")}
             <span>{props.loginData?.user?.email}</span>
