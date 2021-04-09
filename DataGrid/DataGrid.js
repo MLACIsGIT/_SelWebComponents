@@ -6,12 +6,16 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 export default function DataGrid(props) {
     return (
-        <div id={props.id} className="ag-theme-alpine">
+        <div id={props.id} className="ag-theme-alpine" style={{ height: "70vh", width: "100%" }}>
             <AgGridReact
                 rowData={props.data}>
-                <AgGridColumn field="make" sortable={true} filter={true}></AgGridColumn>
-                <AgGridColumn field="model" sortable={true} filter={true}></AgGridColumn>
-                <AgGridColumn field="price" sortable={true} filter={true}></AgGridColumn>
+                {
+                    props.columns.map(col => {
+                        return (
+                            <AgGridColumn key={col.field} field={col.field} sortable={true} filter={true}></AgGridColumn>
+                        )
+                    })
+                }
             </AgGridReact>
         </div>
     );
