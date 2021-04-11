@@ -81,9 +81,12 @@ export default function SelLogin(props) {
                 props.onLogin({
                     user: {
                         email: fieldValues.login,
-                        userLevel: null
+                        userLevel: loginResult.userLevel
                     },
-                    token: null
+                    token: {
+                        token: loginResult.token,
+                        validUntil: loginResult.validUntil
+                    }
                 })
             }
         }

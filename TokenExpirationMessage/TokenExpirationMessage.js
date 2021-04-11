@@ -10,11 +10,7 @@ export default function TokenExpirationMessage(props) {
         return Gl.LANG_GET_FormItem(LangElements, key, lang)
     }
 
-    const [tokenExpiration, setTokenExpiration] = useState({
-        validUntil: undefined,
-        tokenStatus: "NOT VALID"
-    });
-
+    const [tokenStatus, setTokenStatus] = useState("NOT VALID");
     const [timerOfExpiresShortly, setTimerOfExpiresShortly] = useState(undefined);
     const [timerOfValidity, setTimerOfValidity] = useState(undefined);
 
@@ -34,20 +30,12 @@ export default function TokenExpirationMessage(props) {
 
     function onTimerOfExpiresShortly() {
         removeTimerOfExpiresShorly();
-
-        setTokenExpiration({
-            ...tokenExpiration,
-            tokenStatus: "EXPIRES SHORTLY"
-        })
+        setTokenStatus("EXPIRES SHORTLY")
     }
 
     function onTimerOfValidity() {
         removeTimerOfValidity();
-
-        setTokenExpiration({
-            ...tokenExpiration,
-            tokenStatus: "NOT VALID"
-        })
+        setTokenStatus("NOT VALID")
     }
 
     function onExtendValidity(e) {
@@ -59,10 +47,7 @@ export default function TokenExpirationMessage(props) {
         removeTimerOfValidity();
 
         if (validUntil === undefined) {
-            setTokenExpiration({
-                validUntil: undefined,
-                tokenStatus: "NOT VALID"
-            });
+            setTokenStatus("NOT VALID");
             return;
         }
 
@@ -71,12 +56,7 @@ export default function TokenExpirationMessage(props) {
         msUntilExp = (msUntilExp < 2000) ? 0 : msUntilExp;
         let tokenStatus = (msUntilExp < 120000) ? "EXPIRES SHORTLY" : "VALID"
 
-        setTokenExpiration(
-            {
-                validUntil: validUntil,
-                tokenStatus: tokenStatus
-            }
-        )
+        setTokenStatus(tokenStatus)
     }
 
     return (
@@ -88,8 +68,8 @@ export default function TokenExpirationMessage(props) {
                 <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert" onClick={e => onExtendValidity(e)}></button>
             </div>
             <div>
-                {`Token valid until: ${tokenExpiration.validUntil}`}
-                {`Token status: ${tokenExpiration.tokenStatus}`}
+                {`Token valid until: ${props.loginData?.token?.validUntil}`}
+                {`Token status: ${tokenStatus}`}
             </div>
         </div>
     )

@@ -49,32 +49,23 @@ export default class Db {
             let fetchData = await fetch(this.settings.server.db, fetchParams);
             let jsonData = await fetchData.json();
 
+            debugger
             if (jsonData.header.result === 'ok') {
-                let serverCurrentUTC = jsonData.body.currentUTC;
-                let serverValidUntil = jsonData.body.validUntil;
                 return ({
                     result: "ok",
                     requestId: jsonData.header.requestId,
                     token: jsonData.body.token,
-                    validUntil: this.getValidUntilFromStrDates(serverCurrentUTC, serverValidUntil)
+                    userLevel: jsonData.body.userLevel,
+                    validUntil: (new Date(jsonData.body.validUntil)) - (new Date(jsonData.body.currentUTC))
                 })
             } else {
                 return {
                     result: 'nok'
                 }
             }
-            
+
         } catch (error) {
             console.log(error);
         }
-    }
-
-    getValidUntilFromStrDates(strServerCurrentUTC, strServerValidUntil) {
-        let serverCurrentUTC = new Date(strServerCurrentUTC);
-        let serverValidUntil = new Date(strServerValidUntil);
-        let currentDate = new Date();
-        let minutes = Math.floor((serverValidUntil - serverCurrentUTC) / 60000) - 1;
-
-        return currentDate.setMinutes(currentDate.getMinutes() + minutes)
     }
 }
