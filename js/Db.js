@@ -9,7 +9,7 @@ export default class Db {
         //return Math.floor(Math.random() * 8999999) + 1000000;
         const cDate = new Date();
         const yearStr = `${cDate.getUTCFullYear()}`;
-        const monthStr = (`0${cDate.getUTCMonth()}`).substr(-2);
+        const monthStr = (`0${cDate.getUTCMonth() + 1}`).substr(-2);
         const dateStr = (`0${cDate.getUTCDate()}`).substr(-2);
         const hoursStr = (`0${cDate.getUTCHours()}`).substr(-2);
         const minutesStr = (`0${cDate.getUTCMinutes()}`).substr(-2);
