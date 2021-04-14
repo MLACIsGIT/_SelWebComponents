@@ -6,8 +6,11 @@ export default class Db {
     }
 
     getSalt() {
-        return Math.floor(Math.random() * 8999999) + 1000000;
+        //return Math.floor(Math.random() * 8999999) + 1000000;
+        const cDate = new Date();
+        return `${cDate.getUTCFullYear()}${cDate.getUTCMonth()}${cDate.getUTCDay()}${cDate.getUTCHours()}${cDate.getUTCMinutes()}`
     }
+
     getPasswordHash(pass, salt) {
         let cryptoPasswordHash = crypto.createHash('sha512');
         let passwordHashData = cryptoPasswordHash.update(pass, 'utf-8');
@@ -49,7 +52,6 @@ export default class Db {
             let fetchData = await fetch(this.settings.server.db, fetchParams);
             let jsonData = await fetchData.json();
 
-            debugger
             if (jsonData.header.result === 'ok') {
                 return ({
                     result: "ok",

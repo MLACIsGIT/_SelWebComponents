@@ -5,72 +5,74 @@ import * as LangJSON from "./TokenExpirationMessage-lang";
 export default function TokenExpirationMessage(props) {
     const LangElements = LangJSON.langJSON();
     const lang = props.lang;
-    
+
     function lng(key) {
         return Gl.LANG_GET_FormItem(LangElements, key, lang)
     }
 
     const [tokenStatus, setTokenStatus] = useState("NOT VALID");
-    const [timerOfExpiresShortly, setTimerOfExpiresShortly] = useState(undefined);
-    const [timerOfValidity, setTimerOfValidity] = useState(undefined);
 
-    function removeTimerOfExpiresShorly() {
-        if (timerOfExpiresShortly !== undefined) {
-            clearTimeout(timerOfExpiresShortly);
-            setTimerOfExpiresShortly(undefined);
-        }
-    }
-
-    function removeTimerOfValidity() {
-        if (timerOfValidity !== undefined) {
-            clearTimeout(timerOfValidity);
-            setTimerOfValidity(undefined);
-        }
-    }
-
-    function onTimerOfExpiresShortly() {
-        removeTimerOfExpiresShorly();
-        setTokenStatus("EXPIRES SHORTLY")
-    }
-
-    function onTimerOfValidity() {
-        removeTimerOfValidity();
-        setTokenStatus("NOT VALID")
+    function onLogout() {
+        props.onLogout()
     }
 
     function onExtendValidity(e) {
         alert("meghosszabbítom!")
     }
 
-    function setNewTimerOfValidity(validUntil) {
-        removeTimerOfExpiresShorly();
-        removeTimerOfValidity();
+    useEffect(() => {
+        let timerOfExpiresShortly;
+        let timerOfValidity;
 
-        if (validUntil === undefined) {
+        let validUntil = props?.loginData?.token?.validUntil;
+
+        if (validUntil === undefined || validUntil < 2000) {
             setTokenStatus("NOT VALID");
-            return;
+        } else {
+            let setTimerShortly = false;
+
+            if (validUntil < 120000) {
+                setTokenStatus("EXPIRES SHORTLY");
+            } else {
+                setTokenStatus("VALID");
+                setTimerShortly = true
+            }
+
+            timerOfValidity = setTimeout(() => {
+                onLogout();
+            }, validUntil - 5000)
+
+            if (setTimerShortly) {
+                timerOfExpiresShortly = setTimeout(() => {
+                    setTokenStatus("EXPIRES SHORTLY");
+                }, validUntil - 120000)
+            }
         }
 
-        let currentDate = new Date();
-        let msUntilExp = validUntil - currentDate;
-        msUntilExp = (msUntilExp < 2000) ? 0 : msUntilExp;
-        let tokenStatus = (msUntilExp < 120000) ? "EXPIRES SHORTLY" : "VALID"
+        return () => {
+            if (timerOfExpiresShortly !== undefined) {
+                clearTimeout(timerOfExpiresShortly);
+            };
 
-        setTokenStatus(tokenStatus)
+            if (timerOfValidity !== undefined) {
+                clearTimeout(timerOfValidity);
+            };
+        }
+    }, [props.loginData])
+
+    let message;
+
+    if (tokenStatus === "EXPIRES SHORTLY") {
+        message = <div className="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{lng("message-expires-shortly-strong")}</strong>
+            {lng("message-expires-shortly")}
+            <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert" onClick={e => onExtendValidity(e)}></button>
+        </div>
     }
 
     return (
         <div className="token-expiration-message">
-
-            <div className="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>{lng("message-expires-shortly-strong")}</strong>
-                {lng("message-expires-shortly")}
-                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert" onClick={e => onExtendValidity(e)}></button>
-            </div>
-            <div>
-                {`Token valid until: ${props.loginData?.token?.validUntil}`}
-                {`Token status: ${tokenStatus}`}
-            </div>
+            {message}
         </div>
     )
 }
