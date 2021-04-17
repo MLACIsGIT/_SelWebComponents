@@ -75,19 +75,27 @@ export default function SelLogin(props) {
         if (isFormValid()) {
             let loginResult = await props.db.login(fieldValues.login, fieldValues.pass)
 
-            if (loginResult.result !== "ok") {
-                showMessageShortly("invalid-password", "danger");
-            } else {
-                props.onLogin({
-                    user: {
-                        email: fieldValues.login,
-                        userLevel: loginResult.userLevel
-                    },
-                    token: {
-                        token: loginResult.token,
-                        validUntil: loginResult.validUntil
-                    }
-                })
+            switch (loginResult?.result) {
+                case "ok":
+                    props.onLogin({
+                        user: {
+                            email: fieldValues.login,
+                            userLevel: loginResult.userLevel
+                        },
+                        token: {
+                            token: loginResult.token,
+                            validUntil: loginResult.validUntil
+                        }
+                    })
+                    break;
+
+                case "nok":
+                    showMessageShortly("invalid-password", "danger");
+                    break;
+
+                default:
+                    showMessageShortly("no-response", "danger");
+                    break;
             }
         }
     }

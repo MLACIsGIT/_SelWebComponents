@@ -28,7 +28,7 @@ export default function InputFieldSet(
         });
       }
 
-      input = <select class="form-select"
+      input = <select
         className="form-select"
         id={name}
         name={name}

@@ -40,6 +40,12 @@ export default function langJSON() {
                 "hu": "Hibás bejelentkezési adatok",
                 "de": "Falsche Angaben",
                 "en": "Incorrect login data"
+            },
+
+            "no-response": {
+                "hu": "A szerviz nem reagál. Kérem próbálja később.",
+                "de": "Service antwortet nicht. Bitte versuchen Sie es später noch einmal.",
+                "en": "The service does not respond. Please try again later."
             }
         }
     }
