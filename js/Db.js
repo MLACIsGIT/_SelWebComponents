@@ -125,4 +125,50 @@ export default class Db {
             }
         }
     }
+
+    async changePassword(currentToken) {
+        let fetchParams = {
+            'method': 'POST',
+            'mode': 'cors',
+            'cache': 'no-cache',
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'body': JSON.stringify({
+                "header": {
+                    "function": "changePassword",
+                    "token": currentToken
+                },
+                "body": {
+                    "portalOwnerId": this.settings.portalOwnerId
+                }
+            })
+        };
+
+        try {
+            let fetchData = await fetch(this.settings.server.db, fetchParams);
+            let jsonData = await fetchData.json();
+
+            if (jsonData.header.result === 'ok') {
+                return ({
+                    result: "ok",
+                    requestId: jsonData.header.requestId,
+                    token: jsonData.body.token,
+                    validUntil: (new Date(jsonData.body.validUntil)) - (new Date(jsonData.body.currentUTC))
+                })
+            } else {
+                return {
+                    result: 'nok'
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+            return {
+                result: "no-response",
+                error: error
+            }
+        }
+    }
+
 }

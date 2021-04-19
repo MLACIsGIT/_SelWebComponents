@@ -1,6 +1,7 @@
 import "./SelLogin.scss";
 import { useRef, useState, useEffect } from 'react';
 import InputFieldSet from '../InputFieldSet/InputFieldSet';
+import SelChangePassword from './Subcomponents/SelChangePassword/SelChangePassword'
 import * as Gl from "../../_SelWebComponents/js/Gl"
 import langJSON from "./SelLogin-lang"
 
@@ -9,6 +10,8 @@ export default function SelLogin(props) {
     const lang = props.lang;
 
     const [formWasValidated, setFormWasValidated] = useState(false);
+
+    const [propsOfSelChangePassword, setPropsOfSelChangePassword] = useState();
 
     function lng(key) {
         return Gl.LANG_GET_FormItem(LangElements, key, lang)
@@ -77,16 +80,19 @@ export default function SelLogin(props) {
 
             switch (loginResult?.result) {
                 case "ok":
-                    props.onLogin({
-                        user: {
-                            email: fieldValues.login,
-                            userLevel: loginResult.userLevel
-                        },
-                        token: {
-                            token: loginResult.token,
-                            validUntil: loginResult.validUntil
-                        }
-                    })
+                    openPasswordChange();
+                    /* 
+                     props.onLogin({
+                         user: {
+                             email: fieldValues.login,
+                             userLevel: loginResult.userLevel
+                         },
+                         token: {
+                             token: loginResult.token,
+                             validUntil: loginResult.validUntil
+                         }
+                     })
+                     */
                     break;
 
                 case "nok":
@@ -163,8 +169,32 @@ export default function SelLogin(props) {
         return isValid;
     }
 
+    function onPasswordChanged(answer) {
+        alert(`I am in the ProcessAfterDialog. Your answer was: ${answer}`)
+    }
+
+    function openPasswordChange() {
+        setPropsOfSelChangePassword(() => {
+            return {
+                show: true,
+                params: {
+                    param1: "param1",
+                    param2: "param2"
+                }
+            }
+        })
+    }
+
     return (
         <div className="sel-login">
+            <div className="SelChangePassword">
+                <SelChangePassword
+                    lang={lang}
+                    settings={props.settings}
+                    dialogParams={propsOfSelChangePassword} onAnswer={onPasswordChanged}
+                />
+            </div>
+
             {formAlertText &&
                 <div className={`alert mt-3 alert-${formAlertType}`} role="alert">
                     {formAlertText}
