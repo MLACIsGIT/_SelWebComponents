@@ -46,6 +46,12 @@ export default function langJSON() {
                 "hu": "A jelszó nem felel meg az előírt szabályoknak.",
                 "de": "Das Passwort entspricht nicht den erforderlichen Regeln.",
                 "en": "The password does not meet the required rules."
+            },
+
+            "err-save": {
+                "hu": "A mentés nem sikerült.",
+                "de": "Speichern fehlgeschlagen.",
+                "en": "Save failed."
             }
         }
     }

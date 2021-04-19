@@ -14,7 +14,7 @@ export default class Db {
         const hoursStr = (`0${cDate.getUTCHours()}`).substr(-2);
         const minutesStr = (`0${cDate.getUTCMinutes()}`).substr(-2);
 
-        return (yearStr+monthStr+dateStr+hoursStr+minutesStr);
+        return (yearStr + monthStr + dateStr + hoursStr + minutesStr);
     }
 
     getPasswordHash(pass, salt) {
@@ -22,9 +22,15 @@ export default class Db {
         let passwordHashData = cryptoPasswordHash.update(pass, 'utf-8');
         let passwordHash = (passwordHashData.digest('hex')).toUpperCase();
 
-        let cryptoSaltedHash = crypto.createHash('sha512');
-        let saltedHashData = cryptoSaltedHash.update(`${passwordHash}${salt}`, 'utf-8');
-        let saltedHash = (saltedHashData.digest('hex')).toUpperCase();
+        let saltedHash
+
+        if (salt === "") {
+            saltedHash = passwordHash
+        } else {
+            let cryptoSaltedHash = crypto.createHash('sha512');
+            let saltedHashData = cryptoSaltedHash.update(`${passwordHash}${salt}`, 'utf-8');
+            saltedHash = (saltedHashData.digest('hex')).toUpperCase();
+        }
 
         return saltedHash;
     }
@@ -64,7 +70,8 @@ export default class Db {
                     requestId: jsonData.header.requestId,
                     token: jsonData.body.token,
                     userLevel: jsonData.body.userLevel,
-                    validUntil: (new Date(jsonData.body.validUntil)) - (new Date(jsonData.body.currentUTC))
+                    validUntil: (new Date(jsonData.body.validUntil)) - (new Date(jsonData.body.currentUTC)),
+                    PasswordUpdateRequired: jsonData.body.passwordUpdateRequired
                 })
             } else {
                 return {
@@ -126,7 +133,9 @@ export default class Db {
         }
     }
 
-    async changePassword(currentToken) {
+    async changePassword(currentToken, newPassword) {
+        let newPasswordHash = this.getPasswordHash(newPassword, '')
+
         let fetchParams = {
             'method': 'POST',
             'mode': 'cors',
@@ -140,7 +149,9 @@ export default class Db {
                     "token": currentToken
                 },
                 "body": {
-                    "portalOwnerId": this.settings.portalOwnerId
+                    "portalOwnerId": this.settings.portalOwnerId,
+                    "newPassword_hash": newPasswordHash,
+                    "newPassword_updateRequired": false
                 }
             })
         };

@@ -80,19 +80,24 @@ export default function SelLogin(props) {
 
             switch (loginResult?.result) {
                 case "ok":
-                    openPasswordChange();
-                    /* 
-                     props.onLogin({
-                         user: {
-                             email: fieldValues.login,
-                             userLevel: loginResult.userLevel
-                         },
-                         token: {
-                             token: loginResult.token,
-                             validUntil: loginResult.validUntil
-                         }
-                     })
-                     */
+                    if (loginResult.PasswordUpdateRequired) {
+                        setFieldValues({
+                            login: '',
+                            pass: ''
+                        })
+                        openPasswordChange(loginResult.token);
+                    } else {
+                        props.onLogin({
+                            user: {
+                                email: fieldValues.login,
+                                userLevel: loginResult.userLevel
+                            },
+                            token: {
+                                token: loginResult.token,
+                                validUntil: loginResult.validUntil
+                            }
+                        })
+                    }
                     break;
 
                 case "nok":
@@ -170,17 +175,25 @@ export default function SelLogin(props) {
     }
 
     function onPasswordChanged(answer) {
-        alert(`I am in the ProcessAfterDialog. Your answer was: ${answer}`)
+        setPropsOfSelChangePassword({
+            show: false
+        })
+
+        if (answer === 'ok') {
+            setFieldValues(
+                {
+                    login: '',
+                    pass: ''
+                }
+            )
+        }
     }
 
-    function openPasswordChange() {
+    function openPasswordChange(currentToken) {
         setPropsOfSelChangePassword(() => {
             return {
                 show: true,
-                params: {
-                    param1: "param1",
-                    param2: "param2"
-                }
+                token: currentToken
             }
         })
     }
@@ -191,6 +204,8 @@ export default function SelLogin(props) {
                 <SelChangePassword
                     lang={lang}
                     settings={props.settings}
+                    db={props.db}
+                    token={propsOfSelChangePassword?.token}
                     dialogParams={propsOfSelChangePassword} onAnswer={onPasswordChanged}
                 />
             </div>
