@@ -1,3 +1,4 @@
+import './TokenExpirationMessage.scss';
 import { useState, useEffect } from 'react';
 import * as Gl from "../js/Gl";
 import * as LangJSON from "./TokenExpirationMessage-lang";
@@ -18,9 +19,9 @@ export default function TokenExpirationMessage(props) {
         switch (extendResult?.result) {
             case "ok":
                 props.onExtendToken({
-                        token: extendResult.token,
-                        validUntil: extendResult.validUntil
-                    });
+                    token: extendResult.token,
+                    validUntil: extendResult.validUntil
+                });
                 break;
 
             default:
@@ -51,7 +52,6 @@ export default function TokenExpirationMessage(props) {
                     setTokenStatus("VALID");
                     setTimerShortly = true
                 }
-
                 timerOfValidity = setTimeout(() => {
                     props.onExtendToken(null);
                 }, validUntil - 5000)
@@ -80,8 +80,7 @@ export default function TokenExpirationMessage(props) {
     if (tokenStatus === "EXPIRES SHORTLY") {
         message = <div className="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>{lng("message-expires-shortly-strong")}</strong>
-            {lng("message-expires-shortly")}
-            <button type="button" className="btn-close" aria-label="Close" onClick={e => onExtendValidity(e)}></button>
+            <button type="button" className="btn-extend btn btn-success btn-sm" aria-label="Close" onClick={e => onExtendValidity(e)}>{lng("btn-extend")}</button>
         </div>
     }
 

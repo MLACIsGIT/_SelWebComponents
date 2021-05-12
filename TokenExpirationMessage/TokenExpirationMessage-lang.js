@@ -7,15 +7,15 @@ export function langJSON() {
 
         "form-items": {
             "message-expires-shortly-strong": {
-                "hu": "A belépési engedély (token) rövidesen lejár!",
+                "hu": "A belépési engedély rövidesen lejár!",
                 "de": "User Token läuft bald ab!",
-                "en": "Token expires shortly!"
+                "en": "Access authorization expires shortly!"
             },
 
-            "message-expires-shortly": {
-                "hu": " Az érvényességi idő meghosszabításához zárja be ezt az üzenetet.",
-                "de": " Schließen Sie diese Nachricht die Gültigkeit zu verlängern.",
-                "en": " Close this message to extend token validity."
+            "btn-extend": {
+                "hu": " Meghosszabbítás",
+                "de": " Gültigkeit verlängern.",
+                "en": " Extend authorization"
             }
         }
     }
