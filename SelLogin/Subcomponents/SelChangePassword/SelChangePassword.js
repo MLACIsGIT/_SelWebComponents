@@ -64,7 +64,8 @@ export default function SelChangePassword(props) {
     }
 
     function isComplex(value) {
-        return new RegExp(props.settings["password-regex"]).test(value);
+        return /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/.test(value)
+        //return new RegExp(props.settings["password-regex"]).test(value);
     }
 
     function isSame(value) {
@@ -73,7 +74,7 @@ export default function SelChangePassword(props) {
         }
     }
 
-    function clearFields () {
+    function clearFields() {
         setFieldValues({
             password: '',
             passwordAgain: ''
