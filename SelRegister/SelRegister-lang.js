@@ -24,6 +24,12 @@ export default function langJSON() {
                 "en": "Email:"
             },
 
+            "field-emailAgain": {
+                "hu": "Email ismét:",
+                "de": "Email erneut:",
+                "en": "Email again:"
+            },
+
             "field-gdprAccepted-before-link": {
                 "hu": "Az",
                 "de": "Ich habe",
@@ -50,8 +56,20 @@ export default function langJSON() {
 
             "validation-required": {
                 "hu": "Kérem töltse ki a mezőt",
-                "de": "Dateneingabe erforderlick",
+                "de": "Dateneingabe erforderlich",
                 "en": "Please fill in the field"
+            },
+
+            "validation-validEmail": {
+                "hu": "A megadott email hibás",
+                "de": "Ungültige E-Mail",
+                "en": "Invalid email"
+            },
+
+            "validation-emailAndEmailAgainTheSame": {
+                "hu": "Nem egyezik az email címmel",
+                "de": "Stimmt nicht mit der E-Mail-Adresse überein",
+                "en": "Does not match the email address"
             },
 
             "validation-chkboxChecked": {

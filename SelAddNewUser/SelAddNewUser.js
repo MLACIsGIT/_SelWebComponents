@@ -1,11 +1,10 @@
-import "./SelRegister.scss"
 import { useRef, useState, useEffect } from 'react';
 import { Link } from "react-router-dom"
 import InputFieldSet from '../InputFieldSet/InputFieldSet';
 import * as Gl from "../../_SelWebComponents/js/Gl"
-import langJSON from "./SelRegister-lang"
+import langJSON from "./SelAddNewUser-lang"
 
-export default function SelRegister(props) {
+export default function SelAddNewUser(props) {
     const LangElements = langJSON();
     const lang = props.lang;
 
@@ -18,9 +17,8 @@ export default function SelRegister(props) {
     const [errors, setErrors] = useState({
         name: '',
         company: '',
-        email: '',
-        emailAgain: '',
-        gdprAccepted: ''
+        level: '',
+        status: ''
     });
 
     function showMessageShortly(codeOfMessage, typeOfAlert) {
@@ -35,27 +33,27 @@ export default function SelRegister(props) {
     function clearAllErrors() {
         setErrors({
             name: '',
-            company: '',
             email: '',
             emailAgain: '',
-            gdprAccepted: ''
+            level: '',
+            status: ''
         })
     }
 
     const [fieldValues, setFieldValues] = useState({
         name: '',
-        company: '',
         email: '',
         emailAgain: '',
-        gdprAccepted: ''
-    });
+        level: '',
+        status: true
+});
 
     const references = {
         name: useRef(),
-        company: useRef(),
         email: useRef(),
         emailAgain: useRef(),
-        gdprAccepted: useRef()
+        level: useRef(),
+        status: useRef()
     };
 
     const [formAlertText, setFormAlertText] = useState('');
@@ -65,41 +63,26 @@ export default function SelRegister(props) {
         name: {
             required: isNotEmpty
         },
-        company: {
+        email: {
             required: isNotEmpty
         },
-        email: {
-            required: isNotEmpty,
-            validEmail: isValidEmail
-        },
         emailAgain: {
-            required: isNotEmpty,
-            validEmail: isValidEmail,
-            emailAndEmailAgainTheSame: isEmailAndEmailAgainTheSame
+            required: isNotEmpty
         },
-
-        gdprAccepted: {
-            chkboxChecked: isNotEmpty
+        level: {
+            required: isNotEmpty
+        },
+        status: {
         }
     }
 
     const errorTypes = {
         required: lng(`validation-required`),
-        chkboxChecked: lng(`validation-chkboxChecked`),
-        validEmail: lng(`validation-validEmail`),
-        emailAndEmailAgainTheSame: lng(`validation-emailAndEmailAgainTheSame`)
+        chkboxChecked: lng(`validation-chkboxChecked`)
     };
 
     function isNotEmpty(value) {
         return value !== '';
-    }
-
-    function isValidEmail(value) {
-        return Gl.isValidEmail(value);
-    }
-
-    function isEmailAndEmailAgainTheSame(value) {
-        return (fieldValues["email"] === fieldValues["emailAgain"]);
     }
 
     useEffect(() => {
@@ -224,17 +207,6 @@ export default function SelRegister(props) {
                     required={true}
                 />
                 <InputFieldSet
-                    reference={references['company']}
-                    name="company"
-                    labelText={lng(`field-company`)}
-                    type="text"
-                    errors={errors}
-                    fieldValues={fieldValues}
-                    handleInputBlur={handleInputBlur}
-                    handleInputChange={handleInputChange}
-                    required={true}
-                />
-                <InputFieldSet
                     reference={references['email']}
                     name="email"
                     labelText={lng(`field-email`)}
@@ -257,9 +229,26 @@ export default function SelRegister(props) {
                     required={true}
                 />
                 <InputFieldSet
-                    reference={references['gdprAccepted']}
-                    name="gdprAccepted"
-                    labelText={gdprAcceptedText}
+                    reference={references['level']}
+                    name="level"
+                    labelText={lng(`field-level`)}
+                    type="select"
+                    optionList= {[
+                        {value: '', text: lng('field-level-pleaseSelect')},
+                        {value: 'MA', text: lng('field-level-MA')},
+                        {value: 'SA', text: lng('field-level-SA')},
+                        {value: 'U', text: lng('field-level-U')}
+                    ]}
+                    errors={errors}
+                    fieldValues={fieldValues}
+                    handleInputBlur={handleInputBlur}
+                    handleInputChange={handleInputChange}
+                    required={true}
+                />
+                <InputFieldSet
+                    reference={references['status']}
+                    name="status"
+                    labelText={lng(`field-status`)}
                     type="checkbox"
                     errors={errors}
                     fieldValues={fieldValues}
@@ -268,7 +257,7 @@ export default function SelRegister(props) {
                     required={true}
                 />
                 <div className="btn-area">
-                    <button type="submit" className="btn btn-success">{lng(`btn-register`)}</button>
+                    <button type="submit" className="btn btn-success">{lng(`btn-submit`)}</button>
                 </div>
             </form>
         </div>

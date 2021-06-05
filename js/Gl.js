@@ -69,3 +69,8 @@ export function LANG_GET_FormItem(langElements, key, lang) {
     let element = langElements?.["form-items"]?.[key]?.[lang];
     return ((element === undefined) ? `###_${key}` : element)
 }
+
+export function isValidEmail(mail) 
+{
+ return (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail))
+}
