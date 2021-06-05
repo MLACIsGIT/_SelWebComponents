@@ -353,7 +353,7 @@ export default function GridReport(props) {
                         {
                             dataLoadingState === "LOADING" &&
                             <div className="accordion-body loading-spinner">
-                                <div className="spinner-border text-secondary"
+                                <div className="spinner-border text-success"
                                     role="status">
                                     <span className="visually-hidden">Loading...</span>
                                 </div>
@@ -378,7 +378,7 @@ export default function GridReport(props) {
                         }
                     </div>
                 </div>
-                <div className="d-none accordion-item">
+                <div className="accordion-item d-none">
                     <h2 className="accordion-header" id="grid-report-flush-select-columns">
                         <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-selectColumns" aria-expanded="false" aria-controls="flush-collapse-selectColumns">
                             {"###flush-select-columns"}

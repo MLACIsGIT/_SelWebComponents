@@ -1,0 +1,15 @@
+@import "../../../App.scss";
+
+.sel-register {
+    form {
+        .form-check-input {
+            margin-right: 15px;
+        }
+
+        .btn-area {
+            display: flex;
+            margin: 10px 0 30px 0;
+            justify-content: center;
+        }
+    }
+}

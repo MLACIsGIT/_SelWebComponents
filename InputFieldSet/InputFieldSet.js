@@ -42,6 +42,42 @@ export default function InputFieldSet(
       </select>
       break;
 
+    case "radio":
+      if (optionList === undefined) {
+        input = <div ref={reference}>{`InputFieldSet - radio: options are not defined!`}</div>
+      } else {
+        input = <div ref={reference} className="radio-group">
+          {optionList.map(option => {
+            return (
+              <div className="form-check" key={option.value}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={name}
+                  value={option.value}
+                  id={`${name}-${option.name}`}
+                  checked={(fieldValues[name] === option.value)}
+                  onChange={(e) => {
+                    handleInputChange({
+                      target: {
+                        name: name,
+                        value: option.value
+                      }
+                    }
+                  )}}
+                />
+
+                <label className="form-check-label" htmlFor={option.name}>
+                  {option.text}
+                </label>
+              </div>
+
+            )
+          })}
+        </div>
+      }
+      break;
+
     case "textarea":
       input = <textarea
         className="form-control"
@@ -94,6 +130,15 @@ export default function InputFieldSet(
       <div className={divErrorClass}>
         {input}
         {labelArea}
+        {divError}
+      </div>
+    );
+  }
+
+  if (type === 'radio') {
+    return (
+      <div className={divErrorClass}>
+        {input}
         {divError}
       </div>
     );
