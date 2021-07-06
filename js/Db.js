@@ -182,4 +182,56 @@ export default class Db {
         }
     }
 
+    async getData(currentToken, queryParams) {
+        debugger
+        let fetchParams = {
+            'method': 'POST',
+            'mode': 'cors',
+            'cache': 'no-cache',
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'body': JSON.stringify({
+                "header": {
+                    "function": "getData",
+                    "lang": queryParams.lang,
+                    "token": currentToken
+                },
+                "body": {
+                    "portalOwnerId": this.settings.portalOwnerId,
+                    "reportId": queryParams.reportId,
+                    "where": queryParams.where,
+                    "pageNo": queryParams.pageNo,
+                    "rowsPerPage": queryParams.rowsPerPage,
+                }
+            })
+        };
+
+        try {
+            let fetchData = await fetch(this.settings.server.db, fetchParams);
+            let jsonData = await fetchData.json();
+debugger
+            if (jsonData.header.result === 'ok') {
+                return ({
+                    result: "ok",
+                    requestId: jsonData.header.requestId,
+                    columns: jsonData.body.columns,
+                    data: jsonData.body.data,
+                    token: jsonData.body.token,
+                    validUntil: (new Date(jsonData.body.validUntil)) - (new Date(jsonData.body.currentUTC))
+                })
+            } else {
+                return {
+                    result: 'nok'
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+            return {
+                result: "no-response",
+                error: error
+            }
+        }
+    }
 }
