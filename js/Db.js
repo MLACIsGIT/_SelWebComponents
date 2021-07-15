@@ -61,6 +61,7 @@ export default class Db {
         };
 
         try {
+            debugger
             let fetchData = await fetch(this.settings.server.db, fetchParams);
             let jsonData = await fetchData.json();
 
