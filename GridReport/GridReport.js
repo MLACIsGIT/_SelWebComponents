@@ -1,18 +1,17 @@
-import "./GridReport.scss";
-import { Accordion } from "bootstrap";
-import { useState } from "react";
-import DataGrid from "../DataGrid/DataGrid";
-import * as Gl from "../js/Gl";
-import ExcelExport from "../ExcelExport/ExcelExport";
+import './GridReport.scss';
+import { Accordion } from 'bootstrap';
+import { useState } from 'react';
+import DataGrid from '../DataGrid/DataGrid';
+import * as Gl from '../js/Gl';
+import ExcelExport from '../ExcelExport/ExcelExport';
 
 export default function GridReport(props) {
   const LangElements = props.report.languageElements;
   const lang = props.lang;
 
-  let columns = props.report.columns;
-
-  const [dataLoadingState, setDataLoadingState] = useState("NOT LOADED");
+  const [dataLoadingState, setDataLoadingState] = useState('NOT LOADED');
   const [gridData, setGridData] = useState([]);
+  const [columns, setColumns] = useState([]);
 
   function lng(key) {
     return Gl.LANG_GET_FormItem(LangElements, key, lang);
@@ -20,7 +19,7 @@ export default function GridReport(props) {
 
   function getSQL() {
     let filterFields = Array.from(
-      document.querySelectorAll(".reportFilter")
+      document.querySelectorAll('.reportFilter')
     ).filter((e) => {
       return e.dataset.sql;
     });
@@ -29,7 +28,7 @@ export default function GridReport(props) {
       .filter((e) => e.value)
       .map((e) => {
         switch (e.type) {
-          case "date":
+          case 'date':
             let dateValue = new Date(e.value);
             let sqlDate = `CONVERT(DATETIME, '${dateValue.getFullYear()}-${
               dateValue.getMonth() + 1
@@ -48,137 +47,169 @@ export default function GridReport(props) {
         }
       });
 
-      debugger
-    return sqlFilters.join(" AND ");
+    return sqlFilters.join(' AND ');
   }
 
-  function showDataIfNotCollapsed(e) {
-    if (!e.target.classList.contains("collapsed")) {
-      console.log("getSQL", getSQL());
-
-      showData();
+  async function showDataIfNotCollapsed(e) {
+    if (!e.target.classList.contains('collapsed')) {
+      await showData();
     }
   }
 
-  function showData() {
-    debugger
-    setDataLoadingState("LOADING");
-    props.db
-      .getData(props.loginData.token.token, {
-        lang: props.lang,
-        reportId: "ReportUpsTrackTrace",
-        where: getSQL(),
-        pageNo: 0,
-        rowsPerPage: 50,
-      })
+  async function showData() {
+    setColumns([]);
+    setGridData([]);
+
+    setDataLoadingState('LOADING');
+
+    console.log('+++ API BASE', process.env.REACT_APP_API_BASE_URL);
+
+    fetch(process.env.REACT_APP_API_BASE_URL, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        header: {
+          function: 'getData',
+          lang: props.lang,
+          token: props.loginData.token.token,
+        },
+        body: {
+          portalOwnerId: process.env.REACT_APP_PORTAL_OWNER_ID,
+          reportId: 'ReportUpsTrackTrace',
+          where: getSQL(),
+          pageNo: 0,
+          rowsPerPage: 50,
+        },
+      }),
+    })
       .then((result) => {
-          debugger
-        if (result.result !== "ok") {
-          setDataLoadingState("NOT LOADED");
-        } else {
-          //columns = result.columns;
-          setGridData(result.data);
-          setDataLoadingState("LOADED");
+        if (result.status !== 200) {
+          throw new Error('failed');
         }
+        return result.json();
+      })
+      .then((jsonData) => {
+        if (jsonData.header.result !== 'ok') {
+          throw new Error('nok');
+        }
+
+        setColumns(jsonData.body.selectedColumns);
+        setGridData(jsonData.body.data);
+        setDataLoadingState('LOADED');
+      })
+      .catch((error) => {
+        console.error(error);
+        setDataLoadingState('NOT_LOADED');
       });
   }
 
+  let gridOfReport;
+
+  if (dataLoadingState === 'LOADED') {
+    gridOfReport = (
+      <div className='accordion-body'>
+        <div className='accordion-body-header'>
+          <ExcelExport data={gridData} />
+        </div>
+
+        <DataGrid
+          id={`${props.id}-dataGrid`}
+          columns={columns}
+          lang={props.lang}
+          languageElements={props.report.languageElements}
+          data={gridData}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="grid-report">
-      <div className="accordion accordion-flush" id="accordionFlushExample">
-        <div className="accordion-item">
-          <h2 className="accordion-header" id="grid-report-flush-filter">
+    <div className='grid-report'>
+      <div className='accordion accordion-flush' id='accordionFlushExample'>
+        <div className='accordion-item'>
+          <h2 className='accordion-header' id='grid-report-flush-filter'>
             <button
-              className="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#flush-collapse-filter"
-              aria-expanded="false"
-              aria-controls="flush-collapse-filter"
+              className='accordion-button collapsed'
+              type='button'
+              data-bs-toggle='collapse'
+              data-bs-target='#flush-collapse-filter'
+              aria-expanded='false'
+              aria-controls='flush-collapse-filter'
             >
-              {lng("flush-filter")}
+              {lng('flush-filter')}
             </button>
           </h2>
           <div
-            id="flush-collapse-filter"
-            className="accordion-collapse collapse"
-            aria-labelledby="grid-report-flush-filter"
-            data-bs-parent="#accordionFlushExample"
+            id='flush-collapse-filter'
+            className='accordion-collapse collapse'
+            aria-labelledby='grid-report-flush-filter'
+            data-bs-parent='#accordionFlushExample'
           >
-            <div className="accordion-body">{props.Filters}</div>
+            <div className='accordion-body'>{props.Filters}</div>
           </div>
         </div>
-        <div className="accordion-item">
-          <h2 className="accordion-header" id="grid-report-flush-data">
+        <div className='accordion-item'>
+          <h2 className='accordion-header' id='grid-report-flush-data'>
             <button
-              className="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#flush-collapse-data"
-              aria-expanded="false"
-              aria-controls="flush-collapse-data"
+              className='accordion-button collapsed'
+              type='button'
+              data-bs-toggle='collapse'
+              data-bs-target='#flush-collapse-data'
+              aria-expanded='false'
+              aria-controls='flush-collapse-data'
               onClick={(e) => showDataIfNotCollapsed(e)}
             >
-              {lng("flush-data")}
+              {lng('flush-data')}
             </button>
           </h2>
           <div
-            id="flush-collapse-data"
-            className="accordion-collapse collapse"
-            aria-labelledby="grid-report-flush-data"
-            data-bs-parent="#accordionFlushExample"
+            id='flush-collapse-data'
+            className='accordion-collapse collapse'
+            aria-labelledby='grid-report-flush-data'
+            data-bs-parent='#accordionFlushExample'
           >
-            {dataLoadingState === "NOT LOADED" && (
-              <div className="accordion-body"></div>
+            {dataLoadingState === 'NOT LOADED' && (
+              <div className='accordion-body'></div>
             )}
 
-            {dataLoadingState === "LOADING" && (
-              <div className="accordion-body loading-spinner">
-                <div className="spinner-border text-success" role="status">
-                  <span className="visually-hidden">Loading...</span>
+            {dataLoadingState === 'LOADING' && (
+              <div className='accordion-body loading-spinner'>
+                <div className='spinner-border text-success' role='status'>
+                  <span className='visually-hidden'>Loading...</span>
                 </div>
               </div>
             )}
 
-            {dataLoadingState === "LOADED" && (
-              <div className="accordion-body">
-                <div className="accordion-body-header">
-                  <ExcelExport data={gridData} />
-                </div>
-
-                <DataGrid
-                  id={`${props.id}-dataGrid`}
-                  columns={ columns }
-                  lang={ props.lang }
-                  data={ gridData }
-                />
-              </div>
-            )}
+            {gridOfReport}
           </div>
         </div>
-        <div className="accordion-item d-none">
+        <div className='accordion-item d-none'>
           <h2
-            className="accordion-header"
-            id="grid-report-flush-select-columns"
+            className='accordion-header'
+            id='grid-report-flush-select-columns'
           >
             <button
-              className="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#flush-collapse-selectColumns"
-              aria-expanded="false"
-              aria-controls="flush-collapse-selectColumns"
+              className='accordion-button collapsed'
+              type='button'
+              data-bs-toggle='collapse'
+              data-bs-target='#flush-collapse-selectColumns'
+              aria-expanded='false'
+              aria-controls='flush-collapse-selectColumns'
             >
-              {"###flush-select-columns"}
+              {'###flush-select-columns'}
             </button>
           </h2>
           <div
-            id="flush-collapse-selectColumns"
-            className="accordion-collapse collapse"
-            aria-labelledby="grid-report-flush-select-columns"
-            data-bs-parent="#accordionFlushExample"
+            id='flush-collapse-selectColumns'
+            className='accordion-collapse collapse'
+            aria-labelledby='grid-report-flush-select-columns'
+            data-bs-parent='#accordionFlushExample'
           >
-            <div className="accordion-body">
+            <div className='accordion-body'>
               Placeholder content for this accordion, which is intended to
               demonstrate the <code>.accordion-flush</code> class. This is the
               third item's accordion body. Nothing more exciting happening here
